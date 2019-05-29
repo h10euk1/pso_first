@@ -9,9 +9,9 @@ def mean_square(state):
     return (state ** 2).mean() # mean-squared
 
 class Particle:
-    I = 0.8
-    Ag = 0.9
-    Ap = 0.9
+    I = 0.8  # 慣性係数
+    Ag = 0.9 # gbestの加速係数
+    Ap = 0.9 # pbestの加速係数
     def __init__(self, n, xmin, xman, vmin, vmax, eval_func=mean_square):
         """ Particleは粒子を表す
 
@@ -32,14 +32,24 @@ class Particle:
                      "score": self._evaluate(self.state)}
 
     def update(self, gb_state):
-        rand_1=np.random.random()
-        rand_2=np.random.random()
+        """ updateは粒子の状態を更新する。
+            大谷紀子『進化計算アルゴリズム入門』、p. 112の式を利用。
+
+            引数:
+                gb_state: グローバルベストの状態
+        """
+        # パーソナルベストを利用した速度の変化量
         delta_vel_by_p = np.random.random() * (self.best["state"] - self.state)
+        # グローバルベストを利用した速度の変化量
         delta_vel_by_g = np.random.random() * (gb_state - self.state)
+        # 速度を更新
         self.velocity = self.I * self.velocity + self.Ap * delta_vel_by_p \
                                                + self.Ag * delta_vel_by_g
+        # 状態を更新
         self.state = self.state + self.velocity
+        # 更新した状態を評価してスコアを導出
         new_score = self._evaluate(self.state)
+        # 新しいスコアが以前のものより小さかったらベストを更新
         if new_score < self.best["score"]:
             self.best["state"] = self.state.copy()
             self.best["score"] = new_score
