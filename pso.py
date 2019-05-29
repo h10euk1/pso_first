@@ -83,6 +83,12 @@ class Swarm:
             p.update(self.gbest["state"])
         self.gbest = self._find_gbest()
 
+    def get_gbest_state(self):
+        return self.gbest["state"].copy()
+
+    def get_gbest_score(self):
+        return self.gbest["score"]
+
     def _find_gbest(self):
         current_best = self.particles[0].pbest
         for p in self.particles:
@@ -121,12 +127,19 @@ def swarm_test():
         p.pbest["score"] = -i
     assert s._find_gbest()["score"] == -2
 
+    # 二次関数z = x**2 + y**2の最小値[x, y]を求める。
+    # 誤差を考慮して、差の絶対値の大きさで成功を判定
     sof = lambda s: s[0]**2 + s[1]**2
     s = Swarm(100, 2, -1, 1, 0, 0, eval_func=sof)
     for _ in range(100):
         s.update()
     assert \
         (np.abs(s.gbest["state"] - np.zeros(2)) < np.array([1E-3, 1E-3])).all()
+
+    # グローバルベストの状態とスコアの取り出しをテスト
+    s = Swarm(3, 1, 0, 1, 0, 1)
+    assert (s.gbest["state"] == s.get_gbest_state()).all()
+    assert s.gbest["score"] == s.get_gbest_score()
 
     print("All the tests of swarm_test() were passed!")
 
