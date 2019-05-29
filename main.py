@@ -24,7 +24,9 @@ class Particle:
                 eval_func: 状態の評価関数
         """
         # 状態、速度の初期値を設定する（一様乱数）
-        self.state, self.velocity = self._rand_state_velocity(size, xmin, xmax, vmin, vmax)
+        self.state, self.velocity = self._rand_state_velocity(size,
+                                                              xmin, xmax,
+                                                              vmin, vmax)
         # 評価関数を引数で与えられたものに設定する
         self._evaluate = eval_func
         # 初期状態とそのときのスコアを暫定ベストにする
@@ -39,7 +41,8 @@ class Particle:
                 gb_state: グローバルベストの状態
         """
         # パーソナルベストを利用した速度の変化量
-        delta_vel_by_p = np.random.random() * (self.pbest["state"] - self.state)
+        delta_vel_by_p = np.random.random() \
+                            * (self.pbest["state"] - self.state)
         # グローバルベストを利用した速度の変化量
         delta_vel_by_g = np.random.random() * (gb_state - self.state)
         # 速度を更新
@@ -69,8 +72,10 @@ class Particle:
         return state, velocity
 
 class Swarm:
-    def __init__(self, p_num, p_size, xmin, xmax, vmin, vmax, eval_func=mean_square):
-        self.particles = [Particle(p_size, xmin, xmax, vmin, vmax, eval_func) for _ in range(p_num)]
+    def __init__(self, p_num,
+                       p_size, xmin, xmax, vmin, vmax, eval_func=mean_square):
+        self.particles = [Particle(p_size, xmin, xmax, vmin, vmax, eval_func)
+                          for _ in range(p_num)]
         self.gbest = self._find_gbest()
 
     def update(self):
@@ -120,7 +125,8 @@ def swarm_test():
     s = Swarm(100, 2, -1, 1, 0, 0, eval_func=sof)
     for _ in range(100):
         s.update()
-    assert (np.abs(s.gbest["state"] - np.zeros(2)) < np.array([1E-3, 1E-3])).all()
+    assert \
+        (np.abs(s.gbest["state"] - np.zeros(2)) < np.array([1E-3, 1E-3])).all()
 
     print("All the tests of swarm_test() were passed!")
 
